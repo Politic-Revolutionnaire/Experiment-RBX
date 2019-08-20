@@ -1,4 +1,7 @@
 #include "main.h"
+#include "okapi/api.hpp"
+
+using namespace okapi;
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -12,24 +15,45 @@
  * from where it left off.
  */
 
- //Subject to change
- #define RIGHT_WHEELS_PORT1 1
- #define RIGHT_WHEELS_PORT2 2
- #define LEFT_WHEELS_PORT1 3
- #define LEFT_WHEELS_PORT2 4
- #define ARM_PORT 7
- #define INTAKE_PORT1 5
- #define INTAKE_PORT2 6
+//Subject to change
+#define RIGHT_WHEELS_PORT1 1
+#define RIGHT_WHEELS_PORT2 2
+#define LEFT_WHEELS_PORT1 3
+#define LEFT_WHEELS_PORT2 4
+#define ARM_PORT 7
+#define INTAKE_PORT1 5
+#define INTAKE_PORT2 6
+
+const double liftP = 1.0;
+const double liftI = 0.001;
+const double liftD = 0.1;
 
 void autonomous() {
-  pros::Controller master(pros::E_CONTROLLER_MASTER);
-  pros::Motor left_motor1(LEFT_WHEELS_PORT1);
-  pros::Motor left_motor2(LEFT_WHEELS_PORT2);
-  pros::Motor right_motor1(RIGHT_WHEELS_PORT1,true);
-  pros::Motor right_motor2(RIGHT_WHEELS_PORT2,true);
-  pros::Motor arm (ARM_PORT);
-  pros::Motor intake1 (INTAKE_PORT1);
-  pros::Motor intake2 (INTAKE_PORT2);
+  auto chassis = ChassisControllerFactory::create(
+    {LEFT_WHEELS_PORT1,LEFT_WHEELS_PORT2}, //Left motors
+    {RIGHT_WHEELS_PORT1,RIGHT_WHEELS_PORT2}, //Right motors
+    AbstractMotor::gearset::green, //Gearset (200rpm)
+    {4.125_in, 12.5_in} //Wheel size, wheelbase width
+  );
 
-  
+  //TODO profile robot to determine actual values for this
+  auto profileController = AsyncControllerFactory::motionProfile(
+    1.0, //Max linear velocity
+    2.0, //Max linear acceleration
+    10.0, //Max linear jerk
+    chassis //Chassis controller
+  );
+
+  auto liftController = AsyncControllerFactory::posPID(ARM_PORT, liftP, liftI, liftD); //Max 270 degrees
+
+  //Sample movement Code
+  profileController.generatePath({
+    Point{0_m, 0_m, 0_deg},
+    Point{1_m, 0_m, 90_deg}},
+    "Test"
+  );
+
+  profileController.setTarget("TEST");
+  profileController.waitUntilSettled();
+  liftController.setTarget(270);
 }

@@ -16,7 +16,7 @@ using namespace okapi;
  */
 
 //Subject to change
-#define RIGHT_WHEELS_PORT1 1
+#define RIGHT_WHEELS_PORT1 13
 #define RIGHT_WHEELS_PORT2 2
 #define LEFT_WHEELS_PORT1 3
 #define LEFT_WHEELS_PORT2 4
@@ -29,6 +29,8 @@ const double liftI = 0.001;
 const double liftD = 0.1;
 
 void autonomous() {
+  pros::lcd::set_text(1, "Auton!");
+  std::cout << "auto";
   auto chassis = ChassisControllerFactory::create(
     {LEFT_WHEELS_PORT1,LEFT_WHEELS_PORT2}, //Left motors
     {RIGHT_WHEELS_PORT1,RIGHT_WHEELS_PORT2}, //Right motors
@@ -53,7 +55,6 @@ void autonomous() {
     "Test"
   );
 
-  profileController.setTarget("TEST");
+  profileController.setTarget("Test");
   profileController.waitUntilSettled();
-  liftController.setTarget(270);
 }

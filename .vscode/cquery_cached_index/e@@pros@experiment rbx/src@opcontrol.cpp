@@ -14,10 +14,10 @@
  * task, not resume it from where it left off.
  */
 
-//Port 10,12 broken
+//Port 1,10,12 broken
 
 //Subject to change
-#define RIGHT_WHEELS_PORT1 1
+#define RIGHT_WHEELS_PORT1 13
 #define RIGHT_WHEELS_PORT2 2
 #define LEFT_WHEELS_PORT1 3
 #define LEFT_WHEELS_PORT2 4
@@ -27,6 +27,8 @@
 #define TRAY_PORT 11
 
 void opcontrol() {
+	pros::lcd::set_text(1, "Op!");
+	std::cout << "op";
 	pros::Controller master(pros::E_CONTROLLER_MASTER);
 	pros::Motor left_motor1(LEFT_WHEELS_PORT1);
 	pros::Motor left_motor2(LEFT_WHEELS_PORT2);
@@ -60,14 +62,14 @@ void opcontrol() {
 			intake2.move_velocity(-200);
 		}
 		else {
-	 		intake1.move_velocity(0);
-			intake2.move_velocity(0);
+	 		intake1.move_velocity(5);
+			intake2.move_velocity(5);
 		}
 		if(master.get_digital(DIGITAL_X)) {
 			tray.move_velocity(-30);
 		}
 		else if (master.get_digital(DIGITAL_B)) {
-			tray.move_velocity(100);
+			tray.move_velocity(120);
 		}
 		else {
 			tray.move_velocity(0);
